@@ -1,4 +1,4 @@
-custom_properties = ['(C) DESCRIPTION', 
+custom_properties_list = ['(C) DESCRIPTION', 
                      '(C) DIMENSION',
                      '(C) MATERIAL',
                      '(C) REMARKS',

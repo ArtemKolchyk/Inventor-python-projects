@@ -1,6 +1,7 @@
 import win32com.client
 from win32com.client import gencache, Dispatch, constants, DispatchEx
-from get_set_prop import get
+from get_add_set_prop import get_prop, add_prop
+from iprop_list import custom_properties_list
 
 Application = win32com.client.Dispatch('Inventor.Application')
 Application.Visible = True
@@ -14,7 +15,10 @@ oAssembly = mod.AssemblyDocument(oAssembly)
 #получаем список файлов сборки (все детали)
 oRefDocs = oAssembly.AllReferencedDocuments
 #итерация по всем деталям
+#print(custom_properties_list[0])
 for part in oRefDocs:
-    #descr_prop = part.PropertySets.Item("Design Tracking Properties")('Designer').Value
-    print(get(part, "Design Tracking Properties", "bbbb"))
-    #print(descr_prop)
+    for prop in custom_properties_list:
+        if get_prop(part, "Inventor User Defined Properties", prop) == False:
+            add_prop(part, "Inventor User Defined Properties", prop)
+    #print(get(part, "Inventor User Defined Properties", prop))
+    
