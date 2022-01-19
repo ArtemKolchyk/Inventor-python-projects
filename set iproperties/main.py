@@ -20,5 +20,7 @@ for part in oRefDocs:
     for prop in custom_properties_list:
         if get_prop(part, "Inventor User Defined Properties", prop) == False:
             add_prop(part, "Inventor User Defined Properties", prop)
+            print("done")
+        print("done")
     #print(get(part, "Inventor User Defined Properties", prop))
     
