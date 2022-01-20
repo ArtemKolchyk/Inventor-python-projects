@@ -2,6 +2,7 @@ import win32com.client
 from win32com.client import gencache, Dispatch, constants, DispatchEx
 from get_add_set_prop import get_prop, add_prop
 from iprop_list import custom_properties_list
+from fasteners_find import find_fasteners
 
 Application = win32com.client.Dispatch('Inventor.Application')
 Application.Visible = True
@@ -20,6 +21,6 @@ for part in oRefDocs:
     for prop in custom_properties_list:
         if get_prop(part, "Inventor User Defined Properties", prop) == False:
             add_prop(part, "Inventor User Defined Properties", prop)
-    print("done")
+    find_fasteners(part)
     #print(get(part, "Inventor User Defined Properties", prop))
     

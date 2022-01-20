@@ -10,4 +10,4 @@ def add_prop(part, tab, prop):
     part.PropertySets.Item(tab).Add('',prop)
     
 def set_prop(part, tab, prop, value):
-    part.PropertySets.Item(tab)(prop).Value =value
+    part.PropertySets.Item(tab)(prop).Value = value

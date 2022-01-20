@@ -1,9 +1,9 @@
 custom_properties_list = ['(C) DESCRIPTION', 
-                     '(C) DIMENSION',
+                     '(C) DIMENSIONS',
                      '(C) MATERIAL',
                      '(C) REMARKS',
                      '(G) DESCRIPTION', 
-                     '(G) DIMENSION',
+                     '(G) DIMENSIONS',
                      '(G) MATERIAL',
                      '(G) REMARKS',
                      'iprop_item_type']
