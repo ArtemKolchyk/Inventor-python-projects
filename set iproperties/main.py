@@ -16,11 +16,10 @@ oAssembly = mod.AssemblyDocument(oAssembly)
 #получаем список файлов сборки (все детали)
 oRefDocs = oAssembly.AllReferencedDocuments
 #итерация по всем деталям
-#print(custom_properties_list[0])
+
 for part in oRefDocs:
-    for prop in custom_properties_list:
+    for prop in custom_properties_list: #заполняем деталь пустыми свойствами
         if get_prop(part, "Inventor User Defined Properties", prop) == False:
             add_prop(part, "Inventor User Defined Properties", prop)
-    find_fasteners(part)
-    #print(get(part, "Inventor User Defined Properties", prop))
+    find_fasteners(part) #ищет метизы заполняет свойства
     
