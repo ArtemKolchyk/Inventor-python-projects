@@ -118,12 +118,17 @@ def plane_surface(oPart):
     for item in oPart.ComponentDefinition.SurfaceBodies:
             # определяем центры образующих ребер
             center_edge_points = []
+            count_flat_angle_surface = 0
             for face in item.Faces:
                     
                 #5891 - cylinder surface
                 #5890 - plane surface
                 #5895 - torus surface
-                
+                if face.SurfaceType == 5890:
+                    count_flat_angle_surface = count_flat_angle_surface + 1
+                    
+                    
+                    
                 temp_list = []
                 for edge in face.Edges:
                     temp_point = []
