@@ -1,26 +1,11 @@
 from math import asin
+from edges import edge_center_point, point_to_point_line, point_to_point_arc, ratio_major_minor, area, diameter
 
 #работа с ребрами, поверхностями, точками детали
 #принт функция
 def print_list(list):
     for item in list:
         print(item,",")
-#между точками
-def point_to_point(plist): # plist = [[x1,y1,z1],[x2,y2,z2]]
-    #измеряем расстояние между двумя точками
-    #      ((x2-x1)**2+(y2-y1)**2+(z2-z1)**2)**0.5
-    x1 = plist[0][0]
-    x2 = plist[1][0]
-    y1 = plist[0][1]
-    y2 = plist[1][1]
-    z1 = plist[0][2]
-    z2 = plist[1][2]
-    return round(((abs(x2-x1))**2+(abs(y2-y1))**2+(abs(z2-z1))**2)**0.5,2)
-#между точками по кривой
-def point_to_point_arc(plist, D):
-    X = point_to_point(plist) #хорда
-    L = D * asin(X/D)
-    return round(L,2)
 #length, center point, major, minor, Area, Diameter, type
 def edges_all_prop(part):
     #возращает список длин всех ребер детали
@@ -63,90 +48,106 @@ def edges_all_prop(part):
                         rib.append(D)
                         rib.append('curve')
                     edge_list.append(rib) 
-                    #print(rib)
-                             
-    #print(edge_list)
     return edge_list
 
 
-def pipe_THK(part):
-    edge_list = edges_all_prop(part)
-    list_thk = []
-    for x in range(0, len(edge_list)-1, 1):
-        for y in range(0, 3, 1):
-            if edge_list[x][1][y] == edge_list[x+1][1][y]:
-                list_thk.append(round(abs(edge_list[x][2]-edge_list[x+1][2]),2))
-                list_thk.append(round(abs(edge_list[x][3]-edge_list[x+1][3]),2))
-    THK = max(set(list_thk), key=list_thk.count) #возвращаем чаще всего встречающуюся толщину                            
-    return THK 
-
-def pipe_points(part):
-    edge_list = edges_all_prop(part)
-    #получаем координаты всех точек
-    points_list = []  #point, area, OD, type   
-    for x in range(0, len(edge_list)-1, 1):
-        temp_list = []
-        for y in range(x+1, len(edge_list), 1):
-            if edge_list[x][1] ==  edge_list[y][1]:
-                temp_list.append(edge_list[x][1])
-                temp_list.append(round(abs(edge_list[x][4]-edge_list[y][4]),2))
-                temp_list.append(max(edge_list[x][5], edge_list[y][5]))
-                temp_list.append(edge_list[x][6])
-                points_list.append(temp_list)
-    #print_list(points_list)
-    return points_list
-
-def points_dimensions(part):
-    #расстояние от каждой точки до остальных
-    points_list = pipe_points(part)
-    new_list = [] #точки с их расстояниями
-    for i in range(0, len(points_list), 1):
-        temp_list = []
-        temp_list.append(points_list[i][0])
-        point1 = points_list[i][0]
-        sum_dim = 0
-        for k in range(0, len(points_list), 1):
-            point2 = points_list[k][0]
-            dimension = point_to_point([point1, point2])
-            sum_dim = sum_dim + dimension
-        temp_list.append(round(sum_dim,2))
-        new_list.append(temp_list)
-    print_list(new_list)
-
 #все поверхности    
-def plane_surface(oPart):
-    for item in oPart.ComponentDefinition.SurfaceBodies:
+def plane_surface(part):
+    for item in part.ComponentDefinition.SurfaceBodies:
             # определяем центры образующих ребер
-            center_edge_points = []
-            count_flat_angle_surface = 0
-            for face in item.Faces:
-                    
+            faces_list = []
+            length = 0
+            for face in item.Faces: 
                 #5891 - cylinder surface
                 #5890 - plane surface
                 #5895 - torus surface
-                if face.SurfaceType == 5890:
-                    count_flat_angle_surface = count_flat_angle_surface + 1
-                    
-                    
-                    
-                temp_list = []
+                temp = []
+                dia = []
+                points = []
+                count = 0
                 for edge in face.Edges:
-                    temp_point = []
-                    temp_point.append(round(edge.Geometry.Center.X*10,2))
-                    temp_point.append(round(edge.Geometry.Center.Y*10,2))
-                    temp_point.append(round(edge.Geometry.Center.Z*10,2))
-                    if temp_point not in temp_list:
-                        temp_list.append(temp_point)
-                if face.SurfaceType == 5895:
-                    dimension = point_to_point_arc(temp_list, face.Geometry.MajorRadius*2*10)
-                    temp_list.append(dimension)
+                    if edge.GeometryType == 5128:
+                        count = count + 1
+                        continue
+                    dia.append(diameter(edge))
+                    if edge_center_point(edge) not in points:
+                        points.append(edge_center_point(edge))
+                        ratio = ratio_major_minor(edge)[0]
+                if count == face.Edges.Count:
+                    continue
+                temp.append(points)
+                temp.append(dia)
+                temp.append(ratio)
+                temp.append(face_type(face))
+                if len(points) == 2:
+                    if face_type(face) == 'torus':
+                        D = face.Geometry.MajorRadius*2*10
+                        dimension = point_to_point_arc(points, D)    
+                    else:
+                        dimension = point_to_point_line(points)
+                    temp.append(dimension)
                 else:
-                    if len(temp_list) == 2:
-                        temp_list.append(point_to_point(temp_list))
-                if temp_list not in center_edge_points:
-                    center_edge_points.append(temp_list)
+                    temp.append(0)
+                OD = max(dia)
+                try:
+                    THK = abs((dia[0]- dia[1])/2)
+                except:
+                    THK = 0
+                temp.append(OD)
+                temp.append(THK)
+                temp.append(ratio_major_minor(edge)[1])
+                faces_list.append(temp)
+    table = faces_list
+    length = pipe_length(table)
+    OD = pipe_OD(faces_list)
+    THK = pipe_thk(faces_list)
+    add = add_length(faces_list, OD)
+    length = length + add
+    print_list(faces_list)
+    #print(length)
+    #[points, ratio, surface, length, OD, THK, major]
+    return [OD, THK, length]
+    
+
+        
+def face_type(face):
+    x = face.SurfaceType
+    return {
+        5891: "cylinder",
+        5890: "plane",
+        5895: "torus"
+    }.get(x, False)    # False will be returned default if x is not found
+
+def pipe_length(table):
+    l = table[0][4]
+    temp_length_list = []
+    temp_length_list.append(table[0][0])
+    for i in range(0, len(table)-1, 1):
+        for y in range(i+1, len(table), 1):
+            if table[y][0] not in temp_length_list and table[y][4] != 0:
+                l = l + table[y][4]
+                temp_length_list.append(table[y][0])
                 
-                    
-    print_list(center_edge_points)
-                
+    return l 
+
+def pipe_thk(table):
+    thk_list = []
+    for i in range(0, len(table), 1):
+        thk_list.append(table[i][6])
+    thk = max(thk_list)
+    return thk
+
+def pipe_OD(table):
+    od_list = []
+    for i in range(0, len(table), 1):
+        od_list.append(table[i][5])
+    od = max(od_list)
+    return od
+
+def add_length(table, OD):
+    add_length = 0
+    for i in range(0, len(table), 1):
+        if table[i][2] < 1:
+            add_length = add_length + (table[i][7]**2 - (OD/2)**2)**0.5
+    return add_length
     

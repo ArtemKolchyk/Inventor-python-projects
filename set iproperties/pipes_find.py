@@ -3,7 +3,7 @@ import win32com.client
 from win32com.client import gencache, Dispatch, constants, DispatchEx
 from get_add_set_prop import get_prop, add_prop
 from document_type import is_type
-from part_faces_edges_points import pipe_THK, pipe_points, points_dimensions, plane_surface
+from part_faces_edges_points import plane_surface
 
 
 Application = win32com.client.Dispatch('Inventor.Application')
@@ -20,11 +20,8 @@ def calculate_length():
     
     
     if is_type(oPart) == 'part':
-        #pipe_THK(oPart)
-        print("-------------------------------------------------------")
-        #pipe_points(oPart)
-        #points_dimensions(oPart)
-        plane_surface(oPart)
+        print("[OD, THK, length]")
+        print(plane_surface(oPart))
     else: 
             print("not part, swith to part tab")
     
