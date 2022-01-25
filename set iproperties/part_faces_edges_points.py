@@ -57,7 +57,9 @@ def plane_surface(part):
             # определяем центры образующих ребер
             faces_list = []
             length = 0
-            for face in item.Faces: 
+            for face in item.Faces:
+                if face.SurfaceType == 5893:
+                    return False
                 #5891 - cylinder surface
                 #5890 - plane surface
                 #5895 - torus surface
@@ -103,7 +105,7 @@ def plane_surface(part):
     THK = pipe_thk(faces_list)
     add = add_length(faces_list, OD)
     length = length + add
-    print_list(faces_list)
+    #print_list(faces_list)
     #print(length)
     #[points, ratio, surface, length, OD, THK, major]
     return [OD, THK, length]
@@ -124,7 +126,7 @@ def pipe_length(table):
     temp_length_list.append(table[0][0])
     for i in range(0, len(table)-1, 1):
         for y in range(i+1, len(table), 1):
-            if table[y][0] not in temp_length_list and table[y][4] != 0:
+            if table[y][0] not in temp_length_list and table[y][4] != 0 and shift_points(table[y][0]) not in temp_length_list:
                 l = l + table[y][4]
                 temp_length_list.append(table[y][0])
                 
@@ -150,4 +152,9 @@ def add_length(table, OD):
         if table[i][2] < 1:
             add_length = add_length + (table[i][7]**2 - (OD/2)**2)**0.5
     return add_length
+
+def shift_points(list):
+    a = list[0]
+    b = list[1]
+    return [b, a]
     
