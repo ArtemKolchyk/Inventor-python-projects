@@ -37,7 +37,6 @@ for item in oRefDocs:
         set_pipe(part)
         continue
     if case == 'purchase':
-        print("purchase")
         find_fasteners(part) #ищет метизы заполняет свойства
         continue
     if case == 'plate':
