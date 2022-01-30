@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 custom_properties_list = ['(C) DESCRIPTION', 
                      '(C) DIMENSIONS',
                      '(C) MATERIAL',

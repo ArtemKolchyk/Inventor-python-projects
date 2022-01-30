@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #поиск труб
 from get_add_set_prop import get_prop, add_prop, set_prop
 from part_faces_edges_points import plane_surface

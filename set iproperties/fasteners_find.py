@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from get_add_set_prop import set_prop, get_prop
 #Здесь находятся признаки крепежа
 custom_properties_list = ['(C) DESCRIPTION', 

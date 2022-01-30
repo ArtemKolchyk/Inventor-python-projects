@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from math import asin
 from edges import edge_center_point, point_to_point_line, point_to_point_arc, ratio_major_minor, area, diameter
 

@@ -1,4 +1,5 @@
-#ищем свойство 
+# -*- coding: utf-8 -*-
+# ищем свойство 
 
 def get_prop(part, tab, prop):
     try:

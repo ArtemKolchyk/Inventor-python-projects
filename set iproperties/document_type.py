@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #what is document type
 
 def is_type(oPart):
