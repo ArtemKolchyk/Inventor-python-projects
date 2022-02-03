@@ -34,13 +34,13 @@ for item in oRefDocs:
             add_prop(part, "Inventor User Defined Properties", prop)
     case = analize(part)
     if case == 'pipe':
-        set_pipe(part)
+        #set_pipe(part)
         continue
     if case == 'purchase':
         find_fasteners(part) #ищет метизы заполняет свойства
         continue
     if case == 'plate':
-        find_plates(part)
+        #find_plates(part)
         continue
     
     

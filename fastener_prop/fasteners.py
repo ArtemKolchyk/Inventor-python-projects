@@ -1,5 +1,19 @@
 # -*- coding: utf-8 -*-
-from get_add_set_prop import set_prop, get_prop
+import win32com.client
+from win32com.client import gencache, Dispatch, constants, DispatchEx
+
+Application = win32com.client.Dispatch('Inventor.Application')
+Application.Visible = True
+mod = gencache.EnsureModule('{D98A091D-3A0F-4C3E-B36E-61F62068D488}', 0, 1, 0)
+Application = mod.Application(Application)
+Application.SilentOperation = True
+#получаем активный документ
+part = Application.ActiveDocument
+#подключаемся к детали
+part = mod.PartDocument(part)
+
+
+
 #Здесь находятся признаки крепежа
 custom_properties_list = ['(C) DESCRIPTION', 
                           '(C) DIMENSIONS',
@@ -11,13 +25,13 @@ custom_properties_list = ['(C) DESCRIPTION',
                           '(G) REMARKS',
                           'iprop_item_type']
 
-hex_SCREW_dict = {'(C) DESCRIPTION': "HEX. SCREW", 
+hex_bolt_dict = {'(C) DESCRIPTION': "HEX. BOLT", 
                  '(C) MATERIAL': "8.8 / ISO 898-1",
                  '(C) REMARKS': "ISO 4017",
-                 '(G) DESCRIPTION': "HEX. SCREW", 
+                 '(G) DESCRIPTION': "HEX. BOLT", 
                  '(G) MATERIAL': "8.8 / ISO 898-1",
                  '(G) REMARKS': "ISO 4017",
-                 'iprop_item_type' : "HEX. SCREW",
+                 'iprop_item_type' : "HEX. BOLT",
                  '(C) DIMENSIONS' : "",
                  '(G) DIMENSIONS' : ""
                 }
@@ -56,11 +70,9 @@ item = ("SCREW",
         "NUT",
         "PLAIN",
         "SPRING",
-        #ниже пока не ищем
-        "PLATE",
-        "PIPE")
+        )
 
-dictionary = (hex_SCREW_dict, hex_nut_dict, plain_washer_dict, spring_washer_dict)
+dictionary = (hex_bolt_dict, hex_nut_dict, plain_washer_dict, spring_washer_dict)
 
 def find_fasteners(part):
     #получаем строку description и ищем в ней совпадения
@@ -68,6 +80,7 @@ def find_fasteners(part):
     descr_string = get_prop(part, "Design Tracking Properties", "Description").lower()
     #проходим по всем подстановкам из item
     for i in item:
+        #print(i)
         #проверяем совпадение в строке descr_string текущий item
         if descr_string.find(i.lower()) != -1:
             #смотрим в каждом словаре совпадение значения ключ-значение
@@ -96,5 +109,24 @@ def dimensions(part):
 
         
     
+def get_prop(part, tab, prop):
+    try:
+        return part.PropertySets.Item(tab)(prop).Value
+    except:
+        return False
 
+def add_prop(part, tab, prop):
+    part.PropertySets.Item(tab).Add('',prop)
     
+def set_prop(part, tab, prop, value):
+    part.PropertySets.Item(tab)(prop).Value = value   
+    
+
+
+for prop in custom_properties_list: #заполняем деталь пустыми свойствами
+        if get_prop(part, "Inventor User Defined Properties", prop) == False:
+            add_prop(part, "Inventor User Defined Properties", prop)
+
+find_fasteners(part)
+
+
