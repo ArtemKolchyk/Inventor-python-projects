@@ -1,0 +1,5 @@
+Public Sub CreateParametersAndGroup()
+    ' Set a reference to the active part document
+    Dim oDoc As PartDocument
+    Set oDoc = ThisApplication.ActiveDocument
+End Sub
