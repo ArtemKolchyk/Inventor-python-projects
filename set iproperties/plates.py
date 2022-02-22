@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 #plates
 from get_add_set_prop import set_prop
 
